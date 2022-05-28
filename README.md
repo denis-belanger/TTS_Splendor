@@ -8,8 +8,10 @@ Tabletop Simulator is required to play the mod and can be found in the Steam Sto
 - http://store.steampowered.com/app/286160/Tabletop_Simulator/
 
 ## Instructions
-1. Install Atom: https://api.tabletopsimulator.com/atom/#installing-atom
-2. Install the Tabletop Simulator plugin for Atom: https://api.tabletopsimulator.com/atom/#installing-the-official-plugin
+1. Install Atom:
+   - https://api.tabletopsimulator.com/atom/#installing-atom
+2. Install the Tabletop Simulator plugin for Atom:
+   - https://api.tabletopsimulator.com/atom/#installing-the-official-plugin
 3. In Atom, go to **File → Settings → Packages** and search for ***tabletopsimulator-lua***.
 4. Click **Settings**, then check ***#include other files***.
 5. Under ***Base path for files you wish to bundle or #include***, enter the path to your Git folder.
