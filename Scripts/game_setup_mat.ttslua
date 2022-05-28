@@ -1,0 +1,181 @@
+--// Triggers when the game (and all objects it contains) has finished loading //--
+function onload()
+    addButtons()
+end
+
+--// Add the menu selection buttons to the game setup mat //--
+function addButtons()
+    local button = {
+        owner = Global,
+        pos_x = 0.65,
+        pos_y = 0.1,
+        scale = {0.15, 1, 0.15},
+        width = 2350,
+        height = 600,
+        font_size = 350
+    }
+
+    local double_button_offset = 0.4 -- Multiple buttons offset from center
+
+    self.createButton({
+        click_function = 'checkPlayerCount',
+        function_owner = button.owner,
+        label          = 'Start Game',
+        position       = {button.pos_x, button.pos_y, -0.7},
+        scale          = {0.25, 1, 0.25},
+        width          = button.width,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'doNothing',
+        function_owner = button.owner,
+        label          = 'Players',
+        position       = {button.pos_x - double_button_offset, button.pos_y, -0.425},
+        scale          = button.scale,
+        width          = 0,
+        height         = 0,
+        font_size      = button.font_size,
+        font_color     = {1, 1, 1}
+    })
+
+    self.createButton({
+        click_function = 'changePlayerCountSetting',
+        function_owner = button.owner,
+        label          = 'Auto',
+        position       = {button.pos_x - double_button_offset, button.pos_y, -0.25},
+        scale          = button.scale,
+        width          = button.width / 2.65,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'doNothing',
+        function_owner = button.owner,
+        label          = 'Turns',
+        position       = {button.pos_x, button.pos_y, -0.425},
+        scale          = button.scale,
+        width          = 0,
+        height         = 0,
+        font_size      = button.font_size,
+        font_color     = {1, 1, 1}
+    })
+
+    self.createButton({
+        click_function = 'enableTurns',
+        function_owner = button.owner,
+        label          = 'Off',
+        position       = {button.pos_x, button.pos_y, -0.25},
+        scale          = button.scale,
+        width          = button.width / 2.65,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'doNothing',
+        function_owner = button.owner,
+        label          = 'Music',
+        position       = {button.pos_x + double_button_offset, button.pos_y, -0.425},
+        scale          = button.scale,
+        width          = 0,
+        height         = 0,
+        font_size      = button.font_size,
+        font_color     = {1, 1, 1}
+    })
+
+    self.createButton({
+        click_function = 'enableMusic',
+        function_owner = button.owner,
+        label          = 'Off',
+        position       = {button.pos_x + double_button_offset, button.pos_y, -0.25},
+        scale          = button.scale,
+        width          = button.width / 2.65,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'doNothing',
+        function_owner = button.owner,
+        label          = 'Expansions',
+        position       = {button.pos_x, button.pos_y, -0.025},
+        scale          = button.scale,
+        width          = 0,
+        height         = 0,
+        font_size      = button.font_size,
+        font_color     = {1, 1, 1}
+    })
+
+    self.createButton({
+        click_function = 'enableTradingPostsExpansion',
+        function_owner = button.owner,
+        label          = 'Trading Posts',
+        position       = {button.pos_x, button.pos_y, 0.15},
+        scale          = button.scale,
+        width          = button.width,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'doNothing',
+        function_owner = button.owner,
+        label          = '',
+        position       = {button.pos_x, button.pos_y, 0.15},
+        rotation       = {180, 180, 0},
+        scale          = button.scale,
+        width          = 0,
+        height         = 0,
+        color          = {0.5, 0.5, 0.5},
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'enableOrientExpansion',
+        function_owner = button.owner,
+        label          = 'The Orient',
+        position       = {button.pos_x, button.pos_y, 0.35},
+        scale          = button.scale,
+        width          = button.width,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'enableCitiesExpansion',
+        function_owner = button.owner,
+        label          = 'Cities',
+        position       = {button.pos_x, button.pos_y, 0.55},
+        scale          = button.scale,
+        width          = button.width,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'doNothing',
+        function_owner = button.owner,
+        label          = '',
+        position       = {button.pos_x, button.pos_y, 0.55},
+        rotation       = {180, 180, 0},
+        scale          = button.scale,
+        width          = 0,
+        height         = 0,
+        color          = {0.5, 0.5, 0.5},
+        font_size      = button.font_size
+    })
+
+    self.createButton({
+        click_function = 'enableStrongholdsExpansion',
+        function_owner = button.owner,
+        label          = 'Strongholds',
+        position       = {button.pos_x, button.pos_y, 0.75},
+        scale          = button.scale,
+        width          = button.width,
+        height         = button.height,
+        font_size      = button.font_size
+    })
+end

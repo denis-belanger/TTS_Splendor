@@ -1,0 +1,282 @@
+--// Global constants //--
+tp1 = "3 Rubies 1 Diamond"
+tp2 = "2 Diamonds"
+tp3 = "3 Sapphires 1 Onyx"
+tp4 = "5 Emeralds and Noble"
+tp5 = "3 Onyx"
+
+--// Global variables //--
+interactable = false -- Set the interactibility of components not used to play the game
+
+-- Table for tracking the total points for each player from their zones and the 'Trading Posts' mat
+player_points = {
+    ["Blue"]   = {["mat_points"] = 0, ["tp_points"] = 0},
+    ["White"]  = {["mat_points"] = 0, ["tp_points"] = 0},
+    ["Red"]    = {["mat_points"] = 0, ["tp_points"] = 0},
+    ["Yellow"] = {["mat_points"] = 0, ["tp_points"] = 0}
+}
+
+-- Table for tracking which trading posts have been established by each player
+established_trading_posts = {
+    ["Blue"]   = {[tp1] = false, [tp2] = false, [tp3] = false, [tp4] = false, [tp5] = false},
+    ["White"]  = {[tp1] = false, [tp2] = false, [tp3] = false, [tp4] = false, [tp5] = false},
+    ["Red"]    = {[tp1] = false, [tp2] = false, [tp3] = false, [tp4] = false, [tp5] = false},
+    ["Yellow"] = {[tp1] = false, [tp2] = false, [tp3] = false, [tp4] = false, [tp5] = false}
+}
+
+-- Object GUIDs
+game_setup_mat_guid          = "8cdc9e"
+standard_table_mat_guid      = "473e0f"
+cities_table_mat_guid        = "70915c"
+orient_table_mat_guid        = "10771f"
+orient_cities_table_mat_guid = "e11789"
+trading_posts_mat_guid       = "34ff85"
+
+base_rules_guid      = "dab94f"
+expansion_rules_guid = "2dcbb0"
+
+bag_guids = {
+    mats    = "9a1e1c",
+    decks   = "ecfa08",
+    nobles  = "ee4886",
+    cities  = "655960",
+    shields = "d7f8fa"
+}
+
+token_bag_guids = {
+    ["Diamond"]  = "111cd7",
+    ["Sapphire"] = "50b282",
+    ["Emerald"]  = "51688f",
+    ["Ruby"]     = "1bd146",
+    ["Onyx"]     = "705dce",
+    ["Gold"]     = "01c1ed"
+}
+
+stronghold_bag_guids = {
+    ["Blue"]   = "ea399c",
+    ["White"]  = "61911d",
+    ["Red"]    = "6b631d",
+    ["Yellow"] = "b1e88c"
+}
+
+deck_guids = {
+    ["Blue"]   = "c05462",
+    ["Yellow"] = "48108b",
+    ["Green"]  = "ec3336",
+    ["Red3"]   = "0e9845",
+    ["Red2"]   = "76a02e",
+    ["Red1"]   = "47f1bb"
+}
+
+gem_container_guids = {
+    ["Diamond"]  = "2ebfea",
+    ["Sapphire"] = "325fc4",
+    ["Emerald"]  = "02cff8",
+    ["Ruby"]     = "f450c1",
+    ["Onyx"]     = "38de5d",
+    ["Gold"]     = "233391"
+}
+
+shield_container_guids = {
+    ["Blue"]   = "d385df",
+    ["White"]  = "0b2c9f",
+    ["Red"]    = "1da440",
+    ["Yellow"] = "7171e5"
+}
+
+player_mat_guids = {
+    ["Blue"]   = "b98faf",
+    ["White"]  = "35bd67",
+    ["Red"]    = "fe9092",
+    ["Yellow"] = "0814ee"
+}
+
+point_counter_guids = {
+    ["Blue"]   = "a90d51",
+    ["White"]  = "bcd9a1",
+    ["Red"]    = "028532",
+    ["Yellow"] = "5c4474"
+}
+
+gem_counter_guids = {
+    ["Blue"] = {
+        ["Diamond"]  = "f5e0ae",
+        ["Sapphire"] = "453480",
+        ["Emerald"]  = "44309b",
+        ["Ruby"]     = "ea5957",
+        ["Onyx"]     = "6956c5",
+        ["Gold"]     = "eab3dc"
+    },
+    ["White"] = {
+        ["Diamond"]  = "b25136",
+        ["Sapphire"] = "ff59c1",
+        ["Emerald"]  = "600cc6",
+        ["Ruby"]     = "423516",
+        ["Onyx"]     = "a3017b",
+        ["Gold"]     = "f43c33"
+    },
+    ["Red"] = {
+        ["Diamond"]  = "d9e7cc",
+        ["Sapphire"] = "7cfca3",
+        ["Emerald"]  = "86cc35",
+        ["Ruby"]     = "322ab6",
+        ["Onyx"]     = "db7992",
+        ["Gold"]     = "5cf0e9"
+    },
+    ["Yellow"] = {
+        ["Diamond"]  = "ab3da5",
+        ["Sapphire"] = "69cf6c",
+        ["Emerald"]  = "0fc1f0",
+        ["Ruby"]     = "c57961",
+        ["Onyx"]     = "6cf826",
+        ["Gold"]     = "cf32cf"
+    }
+}
+
+-- Game props GUIDs
+game_prop_guids = {
+    antique_table = "8861c8",
+    red_felt_top  = "4ee1f2",
+    table_strut1  = "363eb6",
+    table_strut2  = "555cc6"
+}
+
+counting_tray_guids = {
+    ["Blue"]   = "171997",
+    ["White"]  = "209493",
+    ["Red"]    = "67247c",
+    ["Yellow"] = "8b3b8c",
+}
+
+-- Pre-loaded mats, tokens, and deck GUIDs
+pre_load_item_guids = {
+    pre_load_standard_table_mat        = "9e748d",
+    pre_load_standard_cities_table_mat = "a48d1a",
+    pre_load_orient_table_mat          = "8c291c",
+    pre_load_orient_cities_table_mat   = "ad172c",
+    pre_load_trading_posts_mat         = "143e1a",
+
+    pre_load_diamond  = "652977",
+    pre_load_emerald  = "89e34b",
+    pre_load_sapphire = "251698",
+    pre_load_ruby     = "dace18",
+    pre_load_onyx     = "be82d1",
+    pre_load_gold     = "6d84ee",
+
+    pre_load_blue_deck   = "366de5",
+    pre_load_yellow_deck = "e506bf",
+    pre_load_green_deck  = "1c6697",
+    pre_load_red3_deck   = "55ee31",
+    pre_load_red2_deck   = "e223a9",
+    pre_load_red1_deck   = "729357"
+}
+
+-- Scripting zone GUIDs
+player_point_zone_guids = {
+    ["Blue"]   = "15d12c",
+    ["White"]  = "f3126c",
+    ["Red"]    = "418b97",
+    ["Yellow"] = "5361d0"
+}
+
+function initializeZones()
+    -- Get the zones over each player mat
+    player_point_zones = {}
+    for player_color, guid in pairs(player_point_zone_guids) do
+        player_point_zones[player_color] = getObjectFromGUID(guid)
+    end
+
+    -- Create the tables for the deck, card, and 'Trading Posts' zones
+    deck_zones = {}
+    card_zones = {}
+    trading_posts_zones = {}
+end
+
+--// Initialize game objects //--
+function initializeObjects()
+    -- Get the game setup map and set interactability
+    game_setup_mat = initializeObject(game_setup_mat_guid)
+
+    -- Get the rulebooks
+    base_rules       = getObjectFromGUID(base_rules_guid)
+    expansions_rules = getObjectFromGUID(expansion_rules_guid)
+
+    -- Get the bags used to store all game components and set position and interactability
+    bags = {}
+    for bag_name, guid in pairs(bag_guids) do
+        bags[bag_name] = initializeBag(guid)
+    end
+
+    token_bags = {}
+    for bag_name, guid in pairs(token_bag_guids) do
+        token_bags[bag_name] = initializeBag(guid)
+    end
+
+    stronghold_bags = {}
+    for bag_name, guid in pairs(stronghold_bag_guids) do
+        stronghold_bags[bag_name] = initializeBag(guid)
+    end
+
+    -- Get the player mats and counters and set interactability
+    player_mats = {}
+    for player_color, guid in pairs(player_mat_guids) do
+        player_mats[player_color] = initializeObject(guid)
+    end
+
+    point_counters = {}
+    for player_color, guid in pairs(point_counter_guids) do
+        point_counters[player_color] = initializeObject(guid)
+    end
+
+    gem_counters = {}
+    for player_color, gem_guids in pairs(gem_counter_guids) do
+        gem_counters[player_color] = {}
+        for gem_name, guid in pairs(gem_guids) do
+            gem_counters[player_color][gem_name] = initializeObject(guid)
+        end
+    end
+
+    -- Get the game props and pre-loaded mats, tokens, and decks and set their interactability
+    game_props = {}
+    for prop_name, guid in pairs(game_prop_guids) do
+        game_props[prop_name] = initializeObject(guid)
+    end
+
+    counting_trays = {}
+    for player_color, guid in pairs(counting_tray_guids) do
+        counting_trays[player_color] = initializeObject(guid)
+    end
+
+    pre_load_items = {}
+    for item_name, guid in pairs(pre_load_item_guids) do
+        pre_load_items[item_name] = initializeObject(guid)
+    end
+
+    -- Create the table for the decks
+    decks = {}
+end
+
+--// Helper function that gets, moves, and locks bags in or out of view (returns bag)
+function initializeBag(guid)
+    local bag = getObjectFromGUID(guid)
+    local color = bag.getColorTint()
+    local position = bag.getPosition()
+    bag.interactable = interactable
+    if interactable then
+        color.a = 1
+        position.y = 10.00
+    else
+        color.a = 0
+        position.y = -10.00
+    end
+    bag.setColorTint(color)
+    bag.setPosition(position)
+    return bag
+end
+
+--// Helper function that gets an object and locks it (returns object)
+function initializeObject(guid)
+    object = getObjectFromGUID(guid)
+    object.interactable = interactable
+    return object
+end

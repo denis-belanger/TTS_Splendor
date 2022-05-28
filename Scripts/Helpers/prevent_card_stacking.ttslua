@@ -1,0 +1,41 @@
+-- Prevent cards from stacking in a player's point zone
+prevent_card_stacking = true
+
+--[[
+    Check if any cards in the player area are stacked, and if so, split them up.
+
+    So here's a weird one. I need to lock out TTS from doing weird stuff when
+    you create a 2-card deck from two individual cards. Otherwise it does REALLY
+    weird stuff (calls functions twice when drawing a card, etc.)
+
+    It doesn't do this if you drop a card onto an existing deck, only when you
+    create a new deck from 2 cards...
+
+    If you know how to fix it so that I don't have to use a mutex, please let me know.
+]]--
+
+function preventCardStacking(container)
+    -- Exit the function if the container isn't a deck
+    if container.name ~= "Deck" then return end
+    -- Exit the funciton if card stacking prevention is disabled
+    if not prevent_card_stacking then return end
+
+    -- Temporatily disable card stacking prevention while the stack is spread apart
+    prevent_card_stacking = false
+    -- Wait for the cards to stack before spreading apart the deck
+    Wait.time(
+        function()
+            for _, zone in ipairs(container.getZones()) do
+                if string.match(zone.getName(), "Player Point Zone") then
+                    container.takeObject({
+                        position = {container.getPosition().x, container.getPosition().y + 1, container.getPosition().z - 0.8},
+                        smooth   = true,
+                        top      = true
+                    })
+                    break
+                end
+            end
+            prevent_card_stacking = true
+        end, 0.5, 0
+    )
+end

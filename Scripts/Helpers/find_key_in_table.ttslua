@@ -1,0 +1,11 @@
+--// Helper function that checks if the table contains the specifid key (returns boolean) //--
+function findKeyInTable(key, table)
+    local found = false
+    for k, _ in pairs(table) do
+        if string.match(key, k) ~= nil then
+            found = true
+            break
+        end
+    end
+    return found
+end

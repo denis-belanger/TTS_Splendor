@@ -1,0 +1,84 @@
+-- Set the paired state of the card
+paired = false
+
+--// Triggers when an object collides with another object //--
+function onCollisionEnter(info)
+    pair(info.collision_object)
+end
+
+--// Duplicate the points of the card this card is dropped on, display the points deca;, and add an 'Unpair' button //--
+function pair(object)
+    -- Exit the function if this card is alreay paired
+    if paired == true then return end
+    -- Exit the function if the colliding object isn't a card
+    if object.type ~= "Card" then return end
+    -- Exit the funtion if the collinding card is above this card
+    if object.getPosition().y >= self.getPosition().y then return end
+    -- Exit the function if the colliding card doesn't have a name
+    if object.getName() == nil then return end
+    -- Exit the function if the colliding card is another pairing card
+    if string.match(object.getName(), "Pairing") ~= nil then return end
+    -- Exit the function if the colliding card name doesn't contain 'card' or 'Cards'
+    if string.match(object.getName(), "card") == nil and string.match(object.getName(), "Card") == nil then return end
+    -- Exit the function if the colliding card's description isn't a number
+    if tonumber(object.getDescription()) == nil then return end
+
+    -- Set the paired state of this card
+    paired = true
+    -- Set the description of this card to that of the colliding card
+    self.setDescription(object.getDescription())
+    -- Update the total points for the zone containing this card if applicable
+    Global.call("triggerTrackPoints", self)
+
+    -- Create the 'Unpair' button so that this card can be unpaired
+    self.createButton({
+        click_function = "unpair",
+        function_owner = self,
+        label          = "Unpair",
+        position       = {0, 0.5, 0.73},
+        height         = 700,
+        width          = 960,
+        font_size      = 200
+    })
+
+    -- Set the parameters for placing the points decal
+    local decal_position   = {0.8115717, 0.3631513, -1.197116}
+    local decal_rotation   = {90, 180, 0}
+    local decal_scale      = {0.3546518, 0.498055, 9.23077}
+    local decal_parameters = {name = "", url = "", position = decal_position, rotation = decal_rotation, scale = decal_scale}
+
+    -- Apply the decal to this card according to the points of the colliding cards
+    if object.getDescription() == "1" then
+        decal_parameters.name = "Pairing Card Decal - 1"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882891249/5F4C18FCC7D09F3A476A6CD626294C0DB2139B78/"
+    elseif object.getDescription() == "2" then
+        decal_parameters.name = "Pairing Card Decal - 2"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882891835/2E934E951F6261645B3195A25591C1EC3EEE5813/"
+    elseif object.getDescription() == "3" then
+        decal_parameters.name = "Pairing Card Decal - 3"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882892571/B9131C4CFAC5758B98C1AE48560683912157C4B4/"
+    elseif object.getDescription() == "4" then
+        decal_parameters.name = "Pairing Card Decal - 4"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882893318/8FB42EBD7CC7D6CE7D915ACAAA695CE3460A5FE7/"
+    else
+        decal_parameters.name = "Pairing Card Decal - 5"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882893926/E1CF00EEF847709E3F1EC1B0BDA9F10E9FDB54C6/"
+    end
+    self.setDecals({decal_parameters})
+end
+
+--// Remove the duplicated points, buttons, and decal from this card //--
+function unpair()
+    -- Set the paired state of this card
+    paired = false
+    -- Rest the description of this card
+    self.setDescription("*")
+    -- Remove all buttons from this card
+    for i = 0, #self.getButtons() - 1 do
+        self.removeButton(i)
+    end
+    -- Remove all decals from this card
+    self.setDecals({})
+    -- Update the total points for the zone containing this card if applicable
+    Global.call("triggerTrackPoints", self)
+end

@@ -1,0 +1,135 @@
+-- Include Files
+#include !\TTS_Splendor\Scripts\Helpers\split_string
+
+--// Triggers when the game (and all objects it contains) has finished loading //--
+function onLoad()
+    -- Get the gem_container_placement table after it is populated
+    Wait.condition(
+        function()
+            -- Get the table defined in the global script
+            gem_container_placement = Global.getTable("gem_container_placement")
+        end,
+        function()
+            -- Wait for the table to be populated
+            return Global.getTable("gem_container_placement") ~= nil
+        end
+    )
+    -- Add the item counts and pay button
+    addButtons()
+    -- Run countItems() every second
+    Wait.time(function() countItems() end, 1, -1)
+end
+
+--// Add the buttons to display the counts for each coin and the pay button //--
+function addButtons()
+    gem_count_buttons = {
+        ["Diamonds"]  = {1.0, 1.0, 1.0},
+        ["Sapphires"] = {0.078, 0.384, 0.851},
+        ["Emeralds"]  = {0.306, 0.494, 0.192},
+        ["Rubies"]    = {0.784, 0.22, 0.153},
+        ["Onyx"]      = {0.3, 0.3, 0.3},
+        ["Gold"]      = {0.894, 0.627, 0.212}
+    }
+
+    -- Set the orientation of the gem count and pay button
+    if self.getPosition().x > 0 then side = 1 else side = -1 end
+    local offset_z = 0
+    for gem_name, gem_color in pairs(gem_count_buttons) do
+        self.createButton({
+            label          = gem_name,
+            click_function = "doNothing",
+            function_owner = self,
+            position       = {11.0 * side, 1.0, 5.0 + offset_z},
+            rotation       = {0, 180, 0},
+            scale          = {5, 5, 5},
+            height         = 0,
+            width          = 0,
+            font_size      = 150,
+            font_color     = gem_color
+        })
+        offset_z = offset_z - 2
+    end
+
+    self.createButton({
+        label          = "Pay",
+        click_function = "putGemsInContainers",
+        function_owner = self,
+        position       = {15.5 * side, 1.0, 0.0},
+        rotation       = {0, 180, 0},
+        scale          = {5, 5, 5},
+        height         = 350,
+        width          = 600,
+        color          = {0, 0, 0},
+        font_size      = 150,
+        font_color     = {1, 1, 1}
+    })
+end
+
+--// Counts the items in the tray //--
+function countItems()
+    local gem_token_counts = {
+        ["Diamond Token"]  = 0,
+        ["Sapphire Token"] = 0,
+        ["Emerald Token"]  = 0,
+        ["Ruby Token"]     = 0,
+        ["Onyx Token"]     = 0,
+        ["Gold Token"]     = 0
+    }
+
+    local itemsInTray = findItemsInBox()
+    -- Go through all items found by the cast
+    for _, entry in ipairs(itemsInTray) do
+        -- Break out of the loop if the item is the tray
+        if entry.hit_object == self then break end
+        -- Get the name of the item
+        local item_name = entry.hit_object.getName()
+        -- Break out of the loop if the item is not a coin
+        if gem_token_counts[item_name] == nil then break end
+        -- Increment the gem token count
+        gem_token_counts[item_name] = 1 + gem_token_counts[item_name]
+    end
+
+    -- Updates the item counts
+    self.editButton({index = 0, label = tostring(gem_token_counts["Diamond Token"])})
+    self.editButton({index = 1, label = tostring(gem_token_counts["Sapphire Token"])})
+    self.editButton({index = 2, label = tostring(gem_token_counts["Emerald Token"])})
+    self.editButton({index = 3, label = tostring(gem_token_counts["Ruby Token"])})
+    self.editButton({index = 4, label = tostring(gem_token_counts["Onyx Token"])})
+    self.editButton({index = 5, label = tostring(gem_token_counts["Gold Token"])})
+end
+
+--// Gets the items in the tray for countItems to count //--
+function findItemsInBox()
+    local scale = self.getScale()
+    local position = self.getPosition()
+    position.y = position.y + (5.95 * scale.y)
+
+    --Cast a box within the tray to get all objects
+    return Physics.cast({
+        origin       = position,
+        direction    = {0, 1, 0},
+        type         = 3, -- Cast a box
+        size         = {17.0 * scale.x, 11 * scale.y, 11.9 * scale.z},
+        max_distance = 0,
+        debug        = false
+    })
+end
+
+--// Move the items out of the tray to a particular position //--
+function putGemsInContainers()
+    local itemsInTray = findItemsInBox()
+    -- Check each item in the tray and move it if it's a coin
+    for _, entry in ipairs(itemsInTray) do
+        -- Break out of the loop if the item is the tray
+        if entry.hit_object == self then break end
+        -- Break out of the loop if the item is not a coin
+        if string.match(entry.hit_object.getName(), "Token") == nil or string.match(entry.hit_object.getName(), "Tokens") ~= nil then break end
+        -- Get the gem name of the coin and move it to the appropriate gem container
+        local gem_name = split(entry.hit_object.getName(), " ")[1]
+        entry.hit_object.setPosition({gem_container_placement.positions[gem_name].x, gem_container_placement.positions[gem_name].y + 0.5, gem_container_placement.positions[gem_name].z})
+        entry.hit_object.setRotation(gem_container_placement.rotation)
+    end
+end
+
+--// Dummy function for disabled buttons //--
+function doNothing() end

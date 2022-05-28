@@ -1,0 +1,217 @@
+--// Count the number of gem cards and coins in a player's zone //--
+function countGem(zone, object)
+    -- Exit the function if the zone is nil
+    if zone == nil then return end
+    -- Exit the function if the zone doesn't have a name
+    if zone.getName() == nil then return end
+    -- Exit the function if the zone isn't a player's point zone
+    if not string.match(zone.getName(), "Player Point Zone") then return end
+
+    -- Get the player color from the name of the player's point zone
+    local player_color = split(zone.getName(), " ")[1]
+
+    -- Exit the function if the object is nil
+    if object == nil then return end
+    -- Exit the function if the object doesn't have a name
+    if object.getName() == nil then return end
+    -- Exit the function if the object's name doesn't contain a gem name
+    if not findKeyInTable(object.getName(), gem_counters[player_color]) then return end
+
+    -- Get the gem name from the object name
+    local gem_name = split(object.getName(), " ")[1]
+    -- Set the default card and gem counts
+    local cards = 0
+    local gems = 0
+
+    -- Count the gem cards and coins in the zone
+    for i = 1, #zone.getObjects() do
+        -- Exit the loop if there are no objects in the zone
+        if #zone.getObjects() == 0 then break end
+
+        local object_in_zone = zone.getObjects()[i]
+        -- Only count objects having names containing the same gem name as the object
+        if string.match(object_in_zone.getName(), gem_name) ~= nil then
+            -- Increment the card count if the object name contains 'card', otherwise increment the coin count
+            if string.match(object_in_zone.getName(), "card") ~= nil or string.match(object_in_zone.getName(), "Card") ~= nil then
+                -- Increment the card count by 2 if the card is a double gem card, otherwise increment by 1
+                if string.match(object_in_zone.getName(), "Double") ~= nil then
+                    cards = cards + 2
+                else
+                    cards = cards + 1
+                end
+            else
+                -- Increment the coin count by 2 if the coin is a double coin card, otherwise incement by 1
+                if object_in_zone.getDescription() == "$$" then
+                    gems = gems + 2
+                else
+                    gems = gems + 1
+                end
+            end
+        end
+    end
+
+    -- Set the card and gem counts; if the gem name is gold, only set the coin count
+    local counts = cards .. "/" .. gems + cards
+    if gem_name == "Gold" then
+        counts = tostring(gems)
+    end
+
+    -- Update the gem counter for the corresponding player
+    gem_counters[player_color][gem_name].TextTool.setValue(counts)
+end
+
+--// Count the number of gem tokens in a player's zone //--
+function trackTotalGemTokens(zone, object)
+    -- Exit the function if the zone is nil
+    if zone == nil then return end
+    -- Exit the function if the zone doesn't have a name
+    if zone.getName() == nil then return end
+    -- Exit the function if the zone isn't a player's point zone
+    if not string.match(zone.getName(), "Player Point Zone") then return end
+
+    -- Get the player color from the name of the player's point zone
+    local player_color = split(zone.getName(), " ")[1]
+
+    -- Exit the function if the object is nil
+    if object == nil then return end
+    -- Exit the function if the object doesn't have a name
+    if object.getName() == nil then return end
+
+    -- Set the default count for gems
+    local gems = 0
+
+    if #zone.getObjects() ~= 0 then
+        for i = 1, #zone.getObjects() do
+            local object = zone.getObjects()[i]
+            if string.match(object.getName(), "Token") ~= nil and string.match(object.getName(), "Tokens") == nil then
+                gems = gems + 1
+            end
+        end
+    end
+
+    player_mats[player_color].editButton({index = 1, label = "Tokens: " .. gems})
+    local button_color = {0, 0, 0}
+    if gems > 10 then
+        button_color = {0.784, 0.22, 0.153}
+    end
+    player_mats[player_color].editButton({index = 2, color = button_color})
+end
+
+--// Helper funtion to trigger the tracking of points from object owned scripts //--
+function triggerTrackPoints(object)
+    -- Exit the function if the object is nil
+    if object == nil then return end
+    -- Exit the function if the object isn't in a zone
+    if #object.getZones() == 0 then return end
+
+    for _, zone in ipairs(object.getZones()) do
+        if string.match(zone.getName(), "Player Point Zone") then
+            trackPoints(zone, object)
+            break
+        end
+    end
+end
+
+--// Calcutlate the total points for cards and nobles in a player's zone //--
+function trackPoints(zone, object)
+    -- Exit the function if the zone is nil
+    if zone == nil then return end
+    -- Exit the function if the zone doesn't have a name
+    if zone.getName() == nil then return end
+    -- Exit the function if the zone isn't a player's point zone
+    if not string.match(zone.getName(), "Player Point Zone") then return end
+
+    -- Get the player color from the name of the player's point zone
+    local player_color = split(zone.getName(), " ")[1]
+
+    -- Exit the function if the object is nil
+    if object == nil then return end
+    -- Exit the function if the object doesn't have a description
+    if object.getDescription() == nil then return end
+
+    -- Set the default count for points
+    local points = 0
+
+    -- Determine if a trading post has been established by a player
+    if #zone.getObjects() ~= 0 then
+        for i = 1, #zone.getObjects() do
+            local object = zone.getObjects()[i]
+            if tonumber(object.getDescription()) ~= nil then
+                points = points + tonumber(object.getDescription())
+            end
+        end
+    end
+    player_points[player_color]["mat_points"] = points
+    updatePointsCounter(player_color)
+end
+
+--// Calculate the total points for established trading posts //--
+function trackTradingPostPoints(zone, object)
+    -- Exit the funciton if the zone is nil
+    if zone == nil then return end
+    -- Exit the function if the zone doesn't have a name
+    if zone.getName() == nil then return end
+    -- Exit the function if the zone isn't a 'Trading Posts' zone
+    if not findKeyInTable(zone.getName(), trading_posts_zones) then return end
+    -- Exit the funciton if the object is nil
+    if object == nil then return end
+    -- Exit the function if the object doesn't have a name
+    if object.getName() == nil then return end
+    -- Exit the function if the object isn't a coat of arms
+    if not string.match(object.getName(), "Coat of Arms") then return end
+
+    -- Get the player color from the name of the coat of arms token
+    local player_color = split(object.getName(), " ")[1]
+    -- Set the default established state for a trading post
+    local established = false
+
+    -- Determine if a trading post has been established by a player
+    if #zone.getObjects() ~= 0 then
+        for i = 1, #zone.getObjects() do
+            if string.match(zone.getObjects()[i].getName(), player_color .. " Coat of Arms") ~= nil then
+                established = true
+                break
+            end
+        end
+    end
+
+    -- Track the established state of a player's trading post
+    established_trading_posts[player_color][zone.getName()] = established
+
+    -- Update the points from a players established trading posts
+    local etp = established_trading_posts[player_color]
+    local points = 0
+    local count = 0
+
+    if etp[tp1] then
+        count = count + 1
+    end
+    if etp[tp2] then
+        count = count + 1
+    end
+    if etp[tp3] then
+        count = count + 1
+    end
+    if etp[tp4] then
+        count = count + 1
+        points = points + 5
+    end
+    if etp[tp5] then
+        count = count + 1
+        points = points + count
+    end
+
+    -- Track the total points for a player's established trading posts
+    player_points[player_color]["tp_points"] = points
+    -- Update the total points counter for a player
+    updatePointsCounter(player_color)
+end
+
+--// Update a player't total points from the player's zone and trading posts mat //--
+function updatePointsCounter(player_color)
+    points = player_points[player_color]["mat_points"] + player_points[player_color]["tp_points"]
+    point_counters[player_color].Counter.setValue(points)
+end
+
+--// Dummy function for disabled buttons //--
+function doNothing() end

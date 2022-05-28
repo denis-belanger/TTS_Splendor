@@ -1,0 +1,176 @@
+-- Include Files
+#include !\TTS_Splendor\Scripts\Helpers\split_string
+
+-- Set the orientation of the snap points
+if self.getPosition().x > 0 then side = -1 else side = 1 end
+-- Get the color of the mat from its name
+mat_color = split(self.getName(), " ")[4]
+
+card_snap_points = {
+    starting_point_x = 0.881 * side,
+    column_padding   = -0.4015 * side,
+    column_count     = 5,
+    starting_point_z = 0.6,
+    row_padding      = -0.17,
+    row_count        = 8,
+    rotation_snap    = true,
+    tags             = {"Card"}
+}
+
+coin_snap_points = {
+    starting_point_x = 0.88475 * side,
+    column_padding   = -0.20075 * side,
+    column_count     = 10,
+    starting_point_z = 0.8,
+    row_padding      = -0.17,
+    row_count        = 7,
+    rotation_snap    = true,
+    tags             = {"Coin"}
+}
+
+noble_snap_points = {
+    starting_point_x = 0.881 * side,
+    column_padding   = -0.4015 * side,
+    column_count     = 5,
+    starting_point_z = -0.7,
+    row_padding      = 0,
+    row_count        = 1,
+    rotation_snap    = true,
+    tags             = {"Noble"}
+}
+
+stronghold_snap_points = {
+    starting_point_x = 0.03 * side,
+    column_padding   = -0.118 * side,
+    column_count     = 3,
+    starting_point_z = 1.485,
+    row_padding      = 0,
+    row_count        = 1,
+    rotation_snap    = false,
+    tags             = {"Stronghold"}
+}
+
+snap_table = {}
+
+--// Triggers when the game (and all objects it contains) has finished loading //--
+function onLoad()
+    displayPlayerName()
+    createTotalGemTokensCounter()
+    addStrongholdDots()
+    createSnapPoints(card_snap_points)
+    createSnapPoints(coin_snap_points)
+    createSnapPoints(noble_snap_points)
+    createSnapPoints(stronghold_snap_points)
+    self.setSnapPoints(snap_table)
+end
+
+--// Triggers when a player changes color //--
+function onPlayerChangeColor()
+    setPlayerName()
+end
+
+-- // Add the button to display the player name for the mat //--
+function displayPlayerName()
+    player_name_orientation = {
+        ["Blue"]   = {-0.454, 0.6, -1.774},
+        ["White"]  = {0, 0.6, -1.125},
+        ["Red"]    = {0, 0.6, -1.125},
+        ["Yellow"] = {0.454, 0.6, -1.774}
+    }
+
+    self.createButton({
+        label          = Player[mat_color].steam_name,
+        click_function = "doNothing",
+        function_owner = self,
+        position       = player_name_orientation[mat_color],
+        rotation       = {0, 180, 0},
+        scale          = {0.086, 0.217, 0.217},
+        height         = 0,
+        width          = 0,
+        font_color     = mat_color,
+        font_size      = 400
+    })
+end
+
+-- // Add the button to display the total number of tokens on the mat //--
+function createTotalGemTokensCounter()
+    local position = {-0.5145 * side, -0.5, 1.481}
+    local scale    = {0.1025, 0.2, 0.26}
+
+    self.createButton({
+        label          = "Tokens: 0",
+        click_function = "doNothing",
+        function_owner = self,
+        position       = position,
+        rotation       = {0, 180, 0},
+        scale          = scale,
+        height         = 0,
+        width          = 0,
+        color          = {0, 0, 0},
+        font_color     = {1, 1, 1},
+        font_size      = 300
+    })
+
+    self.createButton({
+        click_function = "doNothing",
+        function_owner = self,
+        position       = position,
+        rotation       = {180, 180, 0},
+        scale          = scale,
+        height         = 600,
+        width          = 1500,
+        color          = {0, 0, 0},
+        font_color     = {1, 1, 1},
+        font_size      = 300
+    })
+end
+
+-- // Add the button to display the dots for the strongholds //--
+function addStrongholdDots()
+    local position = {0.0875 * side, -0.5, 1.481}
+    local scale    = {0.1025, 0.2, 0.26}
+
+    self.createButton({
+        label          = "",
+        click_function = "doNothing",
+        function_owner = self,
+        position       = position,
+        rotation       = {0, 180, 0},
+        scale          = scale,
+        height         = 0,
+        width          = 0,
+        font_color     = mat_color,
+        font_size      = 500
+    })
+end
+
+--// Set the name of the player for this mat if one exists //--
+function setPlayerName()
+    local player_name = Player[mat_color].steam_name
+    if player_name == nil then player_name = "" end
+    self.editButton({index = 0, label = player_name})
+end
+
+--// Add snap points to the mat for cards, coins, and nobles //--
+function createSnapPoints(snap_points)
+    local pos_x = snap_points.starting_point_x
+    local pos_z = snap_points.starting_point_z
+    for i = 1, snap_points.column_count do
+        for j = 1, snap_points.row_count do
+            snap_point = {
+                position = {pos_x, 0.05, pos_z},
+                rotation = {0, 180, 0},
+                rotation_snap = snap_points.rotation_snap,
+                tags = snap_points.tags
+            }
+            table.insert(snap_table, snap_point)
+            pos_z = pos_z + snap_points.row_padding
+        end
+        pos_z = snap_points.starting_point_z
+        pos_x = pos_x + snap_points.column_padding
+    end
+    pos_x = snap_points.starting_point_x
+end
+
+--// Dummy function for disabled buttons //--
+function doNothing() end

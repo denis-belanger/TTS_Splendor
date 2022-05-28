@@ -1,0 +1,47 @@
+-- Include Files
+#include !\TTS_Splendor\Scripts\Helpers\filter_objects
+
+--// Triggers when the game (and all objects it contains) has finished loading //--
+function onLoad()
+    Wait.condition(
+        function()
+            addButtons()
+        end,
+        function()
+            return self.type == "Bag"
+        end
+    )
+end
+
+--// Triggers when an object enters a container //--
+function onObjectEnterContainer(container, enter_object)
+    if container == self then
+        self.editButton({index = 0, label = #self.getObjects()})
+    end
+end
+
+--// Triggers when an object leaves a container //--
+function onObjectLeaveContainer(container, leave_object)
+    if container == self then
+        leave_object.setRotation(self.getRotation())
+        self.editButton({index = 0, label = #self.getObjects()})
+    end
+end
+
+--// Add a button to display the count of contained objects //--
+function addButtons()
+    self.createButton({
+        click_function = "doNothing",
+        function_owner = self,
+        label          = #self.getObjects(),
+        position       = {1, 0, 1},
+        rotation       = {0, 0, 0},
+        height         = 0,
+        width          = 0,
+        font_color     = "White",
+        font_size      = 450
+    })
+end
+
+--// Dummy function for disabled buttons //--
+function doNothing() end

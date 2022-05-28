@@ -1,0 +1,36 @@
+-- Initialize the list of player colors to hide reserved cards from
+hidden_colors = {}
+
+--// Triggers when the game (and all objects it contains) has finished loading //--
+function onLoad()
+    setHiddenColors()
+end
+
+--// Triggers when an object enters a zone //--
+function onObjectEnterZone(zone, object)
+    if zone.guid == self.guid then
+        Wait.frames(
+            function()
+                object.setHiddenFrom(hidden_colors)
+            end,
+            1
+        )
+    end
+end
+
+--// Triggers when an object leaves a zone //--
+function onObjectLeaveZone(zone, object)
+    if zone.guid == self.guid then
+        object.setHiddenFrom({})
+    end
+end
+
+--// Set the player colors to which the cards are invisible //--
+function setHiddenColors()
+    hidden_colors = Player.getAvailableColors()
+    for i, color in ipairs(hidden_colors) do
+        if string.match(self.getName(), color) ~= nil then
+            table.remove(hidden_colors, i)
+        end
+    end
+end

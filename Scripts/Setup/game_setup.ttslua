@@ -1,0 +1,257 @@
+--// Setup the table mat and place all necessary components //--
+function startGame()
+    print("Starting a new " .. number_of_players .. "-player game...")
+
+    -- Remove the game setup mat
+    bags.mats.putObject(game_setup_mat)
+
+    -- Place a table mat based on the selected
+    if orient_expansion_enabled then
+        -- Use the custom 'Orient Cities' mat if both expansions are enabled, otherwise use the 'Orient' mat
+        if cities_expansion_enabled then
+            table_mat_guid = orient_cities_table_mat_guid
+        else
+            table_mat_guid = orient_table_mat_guid
+        end
+        table_mat = bags.mats.takeObject({
+            guid     = table_mat_guid,
+            position = {0.0, 0.96, 1.44},
+            rotation = {0, 180, 0},
+            smooth   = false,
+        })
+    else
+        -- Use the 'Cities' mat if the expansion is enabled, otherwise us the standard mat
+        if cities_expansion_enabled then
+            table_mat_guid = cities_table_mat_guid
+        else
+            table_mat_guid = standard_table_mat_guid
+        end
+        -- Place the table mat
+        table_mat = bags.mats.takeObject({
+            guid     = table_mat_guid,
+            position = {0, 0.96, 0},
+            rotation = {0, 180, 0},
+            smooth   = false,
+        })
+    end
+
+    -- Lock the table mat
+    table_mat.setLock(true)
+    -- Create the locations for nobles, cities, coins and decks/card zones
+    createTableMatObjectLocations()
+    -- Crete the scripting zones for the decks and cards relative to the table mat
+    createDeckScriptingZones()
+    createCardScriptingZones()
+
+    -- Place the 'Trading Posts' mat if the expansion is selected
+    if trading_posts_expansion_enabled then
+        local trading_posts_mat_parameters = {
+            guid     = trading_posts_mat_guid,
+            position = {0, 1, 11.62},
+            rotation = {0, 180, 0},
+            smooth   = false,
+        }
+        if orient_expansion_enabled then
+            trading_posts_mat_parameters.position = {0, 1, 14.5}
+        end
+        -- Plcae the 'Trading Posts' mat
+        trading_posts_mat = bags.mats.takeObject(trading_posts_mat_parameters)
+        -- Lock the 'Trading Posts' mat
+        trading_posts_mat.setLock(true)
+        -- Create the locations for 'Trading Posts' zones
+        createTradingPostsMatZoneLocations()
+        -- Crete the scripting zones for the 'Trading Posts' mat
+        createTradingPostScriptingZones()
+    end
+
+    -- Place decks into corresponding zones if they exist
+    for deck_color, _ in pairs(deck_zones) do
+        placeDeck(deck_color)
+    end
+
+    -- Place 'Cities' if the expansion is enabled, otherwise place nobles
+    if cities_expansion_enabled then
+        -- Shuffle the city tiles
+        bags.cities.shuffle()
+        -- Place the city tiles
+        for i = 1, 3 do
+            bags.cities.takeObject({
+                position = city_tile_placement.positions["City #" .. i],
+                rotation = city_tile_placement.rotation,
+                smooth   = false,
+                flip     = randomBoolean()
+            })
+        end
+    else
+        -- Shuffle the noble tiles
+        bags.nobles.shuffle()
+        -- Place the noble tiles
+        for i = 1, number_of_players + 1 do
+            bags.nobles.takeObject({
+                position = noble_tile_placement.positions["Noble #" .. i],
+                rotation = noble_tile_placement.rotation,
+                smooth   = false,
+                flip     = true
+            })
+        end
+    end
+
+    -- Place the gem token containers
+    for gem_name, _ in pairs(gem_container_guids) do
+        placeGemContainer(gem_name)
+    end
+
+    -- Place the gem tokens
+    for i = 1, 5 do
+        placeGemToken("Gold")
+    end
+
+    if number_of_players == 2 then
+        j = 4
+    elseif number_of_players == 3 then
+        j = 5
+    else
+        j = 7
+    end
+
+    for i = 1, j do
+        placeGemToken("Diamond")
+        placeGemToken("Sapphire")
+        placeGemToken("Emerald")
+        placeGemToken("Ruby")
+        placeGemToken("Onyx")
+    end
+
+    -- Place the coat of arms containers if the 'Trading Posts' expansion is enabled
+    if trading_posts_expansion_enabled then
+        for player_color, _ in pairs (shield_container_guids) do
+            placeShieldContainer(player_color)
+        end
+    end
+
+    -- Place the strongholds if the expansion is enabled
+    if strongholds_expansion_enabled then
+        for player_color, _ in pairs (shield_container_guids) do
+            for i = 1, 3 do
+                placeStronghold(player_color, i)
+            end
+        end
+    end
+
+    -- Place the cards
+    for card_color, _ in pairs(card_zones) do
+        placeCards(card_color)
+    end
+
+    -- Set the turn order relative to the starting player
+    setTurnOrder(selectStartingPlayer())
+    -- Enable turns if the option is enabled
+    Turns.enable = turns_enabled
+
+    -- Start playing music if the option is enabled
+    if music_enabled then
+        Wait.condition(
+            function()
+                MusicPlayer.play()
+            end,
+            function() -- Condition function
+                return MusicPlayer.loaded -- Wait for everyone to finish loading the audioclip
+            end
+        )
+    end
+end
+
+--// Place a deck into a scripting zone//--
+function placeDeck(deck_color)
+    local bag      = bags.decks
+    local guid     = deck_guids[deck_color]
+    local position = deck_zones[deck_color].getPosition()
+    local rotation = deck_zones[deck_color].getRotation()
+
+    deck = placeContainer(bag, guid, position, rotation)
+    deck.shuffle()
+    deck.setLock(true)
+    decks[deck_color] = deck
+end
+
+--// Place a gem container //--
+function placeGemContainer(gem_name)
+    local bag      = token_bags[gem_name]
+    local guid     = gem_container_guids[gem_name]
+    local position = gem_container_placement.positions[gem_name]
+    local rotation = gem_container_placement.rotation
+
+    -- Take the gem container from the bag, place it, then lock it
+    local gem_container = placeContainer(bag, guid, position, rotation)
+    gem_container.setLock(true)
+end
+
+--// Place a coat of arms containter //--
+function placeShieldContainer(player_color)
+    local bag      = bags.shields
+    local guid     = shield_container_guids[player_color]
+    local position = shield_container_placement.positions[player_color]
+    local rotation = shield_container_placement.rotation
+
+    -- Place the container then lock it
+    local shield_container = placeContainer(bag, guid, position, rotation)
+    shield_container.setLock(true)
+end
+
+--// Helper function that takes a container object from a container and places it //--
+function placeContainer(bag, guid, position, rotation)
+    return bag.takeObject({
+        guid     = guid,
+        position = position,
+        rotation = rotation,
+        smooth   = false
+    })
+end
+
+--// Place a gem token //--
+function placeGemToken(gem_name)
+    local bag      = token_bags[gem_name]
+    local position = {gem_container_placement.positions[gem_name].x, gem_container_placement.positions[gem_name].y + 0.3, gem_container_placement.positions[gem_name].z}
+    local smooth   = false
+    local flip     = false
+
+    placeObject(bag, position, smooth, flip)
+end
+
+--// Place cards into scripting zones //--
+function placeCards(card_color)
+    local bag      = decks[card_color]
+    local smooth   = true
+    local flip     = true
+
+    for i = 1, #card_zones[card_color] do
+        local position = card_zones[card_color][i].getPosition()
+        placeObject(bag, position, smooth, flip)
+    end
+end
+
+--// Place a stronghold //--
+function placeStronghold(player_color, index)
+    local bag      = stronghold_bags[player_color]
+    local position = stronghold_placement.positions[player_color][index]
+    local smooth   = false
+    local flip     = false
+
+    placeObject(bag, position, smooth, flip)
+    player_mats[player_color].editButton({index = 3, label = "●  ●  ●"})
+end
+
+--// Helper function that takes an object from a container and places it //--
+function placeObject(bag, position, smooth, flip)
+    return bag.takeObject({
+        position = position,
+        smooth   = smooth,
+        flip     = flip
+    })
+end
+
+--//  Helper function that generates a random boolean //--
+function randomBoolean()
+    random_number = math.random(0, 1)
+    return random_number ~= 0
+end

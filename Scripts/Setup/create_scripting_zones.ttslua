@@ -1,0 +1,63 @@
+--// Get or create the scripting zones for decks //--
+function createDeckScriptingZones()
+    for color, position in pairs(deck_zone_parameters.positions) do
+        local zone_name = color .. " Deck Scripting Zone"
+        local scripting_zone = getScriptingZone(zone_name) or spawnObject({
+            type  = "ScriptingTrigger",
+            sound = false
+        })
+        scripting_zone.setName(zone_name)
+        scripting_zone.setPosition(position)
+        scripting_zone.setRotation(deck_zone_parameters.rotation)
+        scripting_zone.setScale(deck_zone_parameters.scale)
+        scripting_zone.setTags({"Card"})
+        deck_zones[color] = scripting_zone
+    end
+end
+
+
+--// Get or create the scripting zones for cards //--
+function createCardScriptingZones()
+    for color, zones in pairs(card_zone_parameters.positions) do
+        card_zones[color] = {}
+        for zone_name, position in pairs(zones) do
+            local full_zone_name = color .. " Card " .. zone_name
+            local scripting_zone = getScriptingZone(full_zone_name) or spawnObject({
+                type  = "ScriptingTrigger",
+                sound = false
+            })
+            scripting_zone.setName(full_zone_name)
+            scripting_zone.setPosition(position)
+            scripting_zone.setRotation(card_zone_parameters.rotation)
+            scripting_zone.setScale(card_zone_parameters.scale)
+            scripting_zone.setTags({"Card"})
+            table.insert(card_zones[color], scripting_zone)
+        end
+    end
+end
+
+function createTradingPostScriptingZones()
+    for zone_name, position in pairs(trading_posts_zone_parameters.positions) do
+        local scripting_zone = getScriptingZone(zone_name) or spawnObject({
+            type  = "ScriptingTrigger",
+            sound = false
+        })
+        scripting_zone.setName(zone_name)
+        scripting_zone.setPosition(position)
+        scripting_zone.setRotation(trading_posts_zone_parameters.rotation)
+        scripting_zone.setScale(trading_posts_zone_parameters.scale)
+        scripting_zone.setTags({"Blue Shield", "White Shield", "Red Shield", "Yellow Shield"})
+        trading_posts_zones[zone_name] = scripting_zone
+    end
+end
+
+--// Get a scripting zone by name if it exists //--
+function getScriptingZone(zone_name)
+    for _, object in ipairs(getAllObjects()) do
+        if object.type == "Scripting" and object.getName() ~= nil then
+            if string.match(object.getName(), zone_name) then
+                return object
+            end
+        end
+    end
+end

@@ -1,0 +1,45 @@
+--// Splendor Scripted + Expandsion //--
+-- Scripting by ZeekMaster and the following:
+   -- Original scripted game setup and points tracking by Mel from the Splendor - Scripted mod.
+   -- Original scritped gem token and card count tracking by Yossarian from the Splendor - Scripted++ mod.
+   -- Original scripted counting bowl by MrStump.
+   -- Original gem token containers with scripted counts and script for randomly selecting starting player by JuggePugge from the Splendor - Scripted mod.
+
+-- Include Files
+#include !\TTS_Splendor\Scripts\Setup\variables
+#include !\TTS_Splendor\Scripts\Setup\menu_selection_logic
+#include !\TTS_Splendor\Scripts\Setup\object_locations
+#include !\TTS_Splendor\Scripts\Setup\create_scripting_zones
+#include !\TTS_Splendor\Scripts\Setup\configure_players
+#include !\TTS_Splendor\Scripts\Setup\game_setup
+#include !\TTS_Splendor\Scripts\Setup\score_count_tracking
+#include !\TTS_Splendor\Scripts\Helpers\split_string
+#include !\TTS_Splendor\Scripts\Helpers\find_key_in_table
+#include !\TTS_Splendor\Scripts\Helpers\prevent_card_stacking
+
+--// Triggers when the game (and all objects it contains) has finished loading //--
+function onLoad()
+    initializeZones()
+    initializeObjects()
+end
+
+--// Triggers when an object enters a zone //--
+function onObjectEnterZone(zone, object)
+    trackTotalGemTokens(zone, object)
+    trackPoints(zone, object)
+    trackTradingPostPoints(zone, object)
+    countGem(zone, object)
+end
+
+--// Triggers when an object leaves a zone //--
+function onObjectLeaveZone(zone, object)
+    trackTotalGemTokens(zone, object)
+    trackPoints(zone, object)
+    trackTradingPostPoints(zone, object)
+    countGem(zone, object)
+end
+
+--// Triggers when an object enters a container //--
+function onObjectEnterContainer(container, _)
+    preventCardStacking(container)
+end

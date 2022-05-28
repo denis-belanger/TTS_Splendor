@@ -1,0 +1,169 @@
+-- Static object locations
+shield_container_placement = {
+    positions = {
+        ["Blue"]   = {23.84, 1.01, 3.53},
+        ["White"]  = {10.50, 1.01, -10.20},
+        ["Red"]    = {-10.50, 1.01, -10.20},
+        ["Yellow"] = {-23.84, 1.01, 3.53}
+    },
+    rotation = {0, 180, 0}
+}
+
+stronghold_placement = {
+    positions = {
+        ["Blue"]   = {{25.88, 1.95, 3.55}, {27.25, 1.95, 3.55}, {28.62, 1.95, 3.55}},
+        ["White"]  = {{12.65, 1.95, -10.18}, {14.02, 1.95, -10.18}, {15.39, 1.95, -10.18}},
+        ["Red"]    = {{-12.65, 1.95, -10.18}, {-14.02, 1.95, -10.18}, {-15.39, 1.95, -10.18}},
+        ["Yellow"] = {{-25.88, 1.95, 3.55}, {-27.25, 1.95, 3.55}, {-28.62, 1.95, 3.55}}
+    }
+}
+
+--// Define dynamic zone and object locations relative to the table mat //--
+function createTableMatObjectLocations()
+    -- Name and positions for table mats
+    local table_mat_name      = table_mat.getName()
+    local table_mat_offsets_z = {["Standard Mat"] = 0, ["Orient Mat"] = -1.44}
+    local table_mat_position  = {x = table_mat.getPosition().x, y = table_mat.getPosition().y, z = table_mat.getPosition().z + table_mat_offsets_z[table_mat_name]}
+    table_mat_rotation  = table_mat.getRotation()
+
+    -- Positions for deck zones on table mat
+    local deck_zone_positions_x = {-10.39, 11.42}
+    local deck_zone_positions_y = {0.2, 0.25, 0.29, 0.16} -- y positions relative to the mat's y position
+    local deck_zone_positions_z = {5.39, 1.23, -2.93}
+    local deck_zone_offsets_x   = {["Standard Mat"] = 0, ["Orient Mat"] = -1.06}
+    local deck_zone_scale       = {2.8, 1.0, 3.9}
+
+    deck_zone_parameters = {
+        positions = {
+            ["Blue"]   = {x = deck_zone_positions_x[1] + table_mat_position.x + deck_zone_offsets_x[table_mat_name], y = deck_zone_positions_y[1] + table_mat_position.y, z = deck_zone_positions_z[1] + table_mat_position.z},
+            ["Yellow"] = {x = deck_zone_positions_x[1] + table_mat_position.x + deck_zone_offsets_x[table_mat_name], y = deck_zone_positions_y[2] + table_mat_position.y, z = deck_zone_positions_z[2] + table_mat_position.z},
+            ["Green"]  = {x = deck_zone_positions_x[1] + table_mat_position.x + deck_zone_offsets_x[table_mat_name], y = deck_zone_positions_y[3] + table_mat_position.y, z = deck_zone_positions_z[3] + table_mat_position.z}
+        },
+        rotation = {0, 180, 180},
+        scale = deck_zone_scale
+    }
+
+    if table_mat_name == "Orient Mat" then
+        deck_zone_parameters.positions["Red3"] = {x = deck_zone_positions_x[2] + table_mat_position.x, y = deck_zone_positions_y[4] + table_mat_position.y, z = deck_zone_positions_z[1] + table_mat_position.z}
+        deck_zone_parameters.positions["Red2"] = {x = deck_zone_positions_x[2] + table_mat_position.x, y = deck_zone_positions_y[4] + table_mat_position.y, z = deck_zone_positions_z[2] + table_mat_position.z}
+        deck_zone_parameters.positions["Red1"] = {x = deck_zone_positions_x[2] + table_mat_position.x, y = deck_zone_positions_y[4] + table_mat_position.y, z = deck_zone_positions_z[3] + table_mat_position.z}
+    end
+
+    -- Positions for deck and card zones on table mat
+    local card_zone_positions_x = {-6.98, -3.8, -0.66, 2.49, 4.84, 8.0}
+    local card_zone_position_y  = 0.61 -- y position relative to the mat's y position
+    local card_zone_positions_z = deck_zone_positions_z
+    local card_zone_offsets_x   = deck_zone_offsets_x
+    local card_zone_scale       = deck_zone_scale
+
+    card_zone_parameters = {
+        positions = {
+            ["Blue"] = {
+                ["Scripting Zone #1"] = {x = card_zone_positions_x[1] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[1] + table_mat_position.z},
+                ["Scripting Zone #2"] = {x = card_zone_positions_x[2] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[1] + table_mat_position.z},
+                ["Scripting Zone #3"] = {x = card_zone_positions_x[3] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[1] + table_mat_position.z},
+                ["Scripting Zone #4"] = {x = card_zone_positions_x[4] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[1] + table_mat_position.z}
+            },
+            ["Yellow"] = {
+                ["Scripting Zone #1"] = {x = card_zone_positions_x[1] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[2] + table_mat_position.z},
+                ["Scripting Zone #2"] = {x = card_zone_positions_x[2] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[2] + table_mat_position.z},
+                ["Scripting Zone #3"] = {x = card_zone_positions_x[3] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[2] + table_mat_position.z},
+                ["Scripting Zone #4"] = {x = card_zone_positions_x[4] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[2] + table_mat_position.z}
+            },
+            ["Green"] = {
+                ["Scripting Zone #1"] = {x = card_zone_positions_x[1] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[3] + table_mat_position.z},
+                ["Scripting Zone #2"] = {x = card_zone_positions_x[2] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[3] + table_mat_position.z},
+                ["Scripting Zone #3"] = {x = card_zone_positions_x[3] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[3] + table_mat_position.z},
+                ["Scripting Zone #4"] = {x = card_zone_positions_x[4] + table_mat_position.x + card_zone_offsets_x[table_mat_name], y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[3] + table_mat_position.z}
+            }
+        },
+        rotation = table_mat_rotation,
+        scale = card_zone_scale
+    }
+
+    if table_mat_name == "Orient Mat" then
+        card_zone_parameters.positions["Red3"] = {
+            ["Scripting Zone #1"] = {x = card_zone_positions_x[6] + table_mat_position.x, y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[1] + table_mat_position.z},
+            ["Scripting Zone #2"] = {x = card_zone_positions_x[5] + table_mat_position.x, y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[1] + table_mat_position.z}
+        }
+
+        card_zone_parameters.positions["Red2"] = {
+            ["Scripting Zone #1"] = {x = card_zone_positions_x[6] + table_mat_position.x, y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[2] + table_mat_position.z},
+            ["Scripting Zone #2"] = {x = card_zone_positions_x[5] + table_mat_position.x, y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[2] + table_mat_position.z}
+        }
+
+        card_zone_parameters.positions["Red1"] = {
+            ["Scripting Zone #1"] = {x = card_zone_positions_x[6] + table_mat_position.x, y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[3] + table_mat_position.z},
+            ["Scripting Zone #2"] = {x = card_zone_positions_x[5] + table_mat_position.x, y = card_zone_position_y + table_mat_position.y, z = card_zone_positions_z[3] + table_mat_position.z}
+        }
+    end
+
+    -- Positions for noble tiles on table mat
+    local noble_postions_x = {["Standard Mat"] = {8.58, 6.78, 10.4, 6.78, 10.4}, ["Orient Mat"] = {-3.67, -0.06, 3.55, -7.28, 7.16}}
+    local noble_postion_y  = 0.61 -- y positions relative to the mat's y position
+    local noble_postions_z = {["Standard Mat"] = {3.54, 0, 0, -3.55, -3.55}, ["Orient Mat"] = {9.05, 9.05, 9.05, 9.05, 9.05}}
+
+    noble_tile_placement = {
+        positions = {
+            ["Noble #1"] = {x = noble_postions_x[table_mat_name][1] + table_mat_position.x, y = noble_postion_y + table_mat_position.y, z = noble_postions_z[table_mat_name][1] + table_mat_position.z},
+            ["Noble #2"] = {x = noble_postions_x[table_mat_name][2] + table_mat_position.x, y = noble_postion_y + table_mat_position.y, z = noble_postions_z[table_mat_name][2] + table_mat_position.z},
+            ["Noble #3"] = {x = noble_postions_x[table_mat_name][3] + table_mat_position.x, y = noble_postion_y + table_mat_position.y, z = noble_postions_z[table_mat_name][3] + table_mat_position.z},
+            ["Noble #4"] = {x = noble_postions_x[table_mat_name][4] + table_mat_position.x, y = noble_postion_y + table_mat_position.y, z = noble_postions_z[table_mat_name][4] + table_mat_position.z},
+            ["Noble #5"] = {x = noble_postions_x[table_mat_name][5] + table_mat_position.x, y = noble_postion_y + table_mat_position.y, z = noble_postions_z[table_mat_name][5] + table_mat_position.z}
+        },
+        rotation = table_mat_rotation
+    }
+
+    -- Positions for city tiles on table mat
+    local city_postions_x = {["Standard Mat"] = {8.58, 8.58, 8.58}, ["Orient Mat"] = {-6.01, -0.06, 5.89}}
+    local city_postion_y  = 0.10 -- y positions relative to the mat's y position
+    local city_postions_z = {["Standard Mat"] = {3.50, 0.0, -3.50}, ["Orient Mat"] = {9.05, 9.05, 9.05}}
+
+    city_tile_placement = {
+        positions = {
+            ["City #1"] = {x = city_postions_x[table_mat_name][1] + table_mat_position.x, y = city_postion_y + table_mat_position.y, z = city_postions_z[table_mat_name][1] + table_mat_position.z},
+            ["City #2"] = {x = city_postions_x[table_mat_name][2] + table_mat_position.x, y = city_postion_y + table_mat_position.y, z = city_postions_z[table_mat_name][2] + table_mat_position.z},
+            ["City #3"] = {x = city_postions_x[table_mat_name][3] + table_mat_position.x, y = city_postion_y + table_mat_position.y, z = city_postions_z[table_mat_name][3] + table_mat_position.z}
+        },
+        rotation = table_mat_rotation
+    }
+
+    -- Positions for gem containers on table mat
+    local gem_container_positions_x = {-6.60, -3.96, -1.32, 1.32, 3.96, 6.60}
+    local gem_container_position_y  = 0.16 -- y positions relative to the mat's y position
+    local gem_container_position_z  = -6.23
+
+    gem_container_placement = {
+        positions = {
+            ["Diamond"]  = {x = gem_container_positions_x[1] + table_mat_position.x, y = gem_container_position_y + table_mat_position.y, z = gem_container_position_z + table_mat_position.z},
+            ["Sapphire"] = {x = gem_container_positions_x[2] + table_mat_position.x, y = gem_container_position_y + table_mat_position.y, z = gem_container_position_z + table_mat_position.z},
+            ["Emerald"]  = {x = gem_container_positions_x[3] + table_mat_position.x, y = gem_container_position_y + table_mat_position.y, z = gem_container_position_z + table_mat_position.z},
+            ["Ruby"]     = {x = gem_container_positions_x[4] + table_mat_position.x, y = gem_container_position_y + table_mat_position.y, z = gem_container_position_z + table_mat_position.z},
+            ["Onyx"]     = {x = gem_container_positions_x[5] + table_mat_position.x, y = gem_container_position_y + table_mat_position.y, z = gem_container_position_z + table_mat_position.z},
+            ["Gold"]     = {x = gem_container_positions_x[6] + table_mat_position.x, y = gem_container_position_y + table_mat_position.y, z = gem_container_position_z + table_mat_position.z}
+        },
+        rotation = table_mat_rotation
+    }
+end
+
+--// Define dynamic zone locations relative to the 'Trading Posts' mat //--
+function createTradingPostsMatZoneLocations()
+    local tp_mat_position = {x = trading_posts_mat.getPosition().x, y = trading_posts_mat.getPosition().y, z = trading_posts_mat.getPosition().z}
+
+    local tp_zone_positions_x = {-10.54, -5.19, 0.22, 5.70, 10.80}
+    local tp_zone_position_y  = 0.49 -- y positions relative to the mat's y position
+    local tp_zone_position_z  = 0.84 -- z positions relative to the mat's z position
+    local tp_zone_scale       = {4.4, 0.85, 4.4}
+
+    trading_posts_zone_parameters = {
+        positions = {
+            [tp1] = {x = tp_zone_positions_x[1] + tp_mat_position.x, y = tp_zone_position_y + tp_mat_position.y, z = tp_zone_position_z + tp_mat_position.z},
+            [tp2] = {x = tp_zone_positions_x[2] + tp_mat_position.x, y = tp_zone_position_y + tp_mat_position.y, z = tp_zone_position_z + tp_mat_position.z},
+            [tp3] = {x = tp_zone_positions_x[3] + tp_mat_position.x, y = tp_zone_position_y + tp_mat_position.y, z = tp_zone_position_z + tp_mat_position.z},
+            [tp4] = {x = tp_zone_positions_x[4] + tp_mat_position.x, y = tp_zone_position_y + tp_mat_position.y, z = tp_zone_position_z + tp_mat_position.z},
+            [tp5] = {x = tp_zone_positions_x[5] + tp_mat_position.x, y = tp_zone_position_y + tp_mat_position.y, z = tp_zone_position_z + tp_mat_position.z}
+        },
+        rotation = trading_posts_mat.getRotation(),
+        scale = tp_zone_scale
+    }
+end
