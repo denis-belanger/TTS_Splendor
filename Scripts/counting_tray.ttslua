@@ -86,7 +86,7 @@ function countItems()
         -- Break out of the loop if the item is not a coin
         if gem_token_counts[item_name] == nil then break end
         -- Increment the gem token count
-        gem_token_counts[item_name] = 1 + gem_token_counts[item_name]
+        gem_token_counts[item_name] = gem_token_counts[item_name] + 1
     end
 
     -- Updates the item counts

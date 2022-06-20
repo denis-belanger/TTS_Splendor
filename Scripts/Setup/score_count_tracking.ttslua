@@ -92,7 +92,7 @@ function trackTotalGemTokens(zone, object)
     player_mats[player_color].editButton({index = 1, label = "Tokens: " .. gems})
     local button_color = {0, 0, 0}
     if gems > 10 then
-        button_color = {0.784, 0.22, 0.153}
+        button_color = {0.784, 0.22, 0.153} -- Custom red color
     end
     player_mats[player_color].editButton({index = 2, color = button_color})
 end
