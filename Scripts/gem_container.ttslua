@@ -5,9 +5,11 @@
 function onLoad()
     Wait.condition(
         function()
+            -- Add buttons to this container
             addButtons()
         end,
-        function()
+        function() -- Condition function
+            -- Wait for this container to become a bag type object
             return self.type == "Bag"
         end
     )

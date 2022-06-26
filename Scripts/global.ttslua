@@ -18,14 +18,20 @@
 #include !\TTS_Splendor\Scripts\Helpers\prevent_card_stacking
 
 --// Triggers when the game (and all objects it contains) has finished loading //--
-function onLoad()
+function onLoad(script_state)
     initializeZones()
     initializeObjects()
+    loadGameInProgress(script_state)
+end
+
+--// Triggers when a game in progress is being saved //--
+function onSave()
+    return saveGameInProgress()
 end
 
 --// Triggers when an object enters a zone //--
 function onObjectEnterZone(zone, object)
-    trackTotalGemTokens(zone, object)
+    trackTotalGemTokens(zone)
     trackPoints(zone, object)
     trackTradingPostPoints(zone, object)
     countGem(zone, object)
@@ -33,7 +39,7 @@ end
 
 --// Triggers when an object leaves a zone //--
 function onObjectLeaveZone(zone, object)
-    trackTotalGemTokens(zone, object)
+    trackTotalGemTokens(zone)
     trackPoints(zone, object)
     trackTradingPostPoints(zone, object)
     countGem(zone, object)

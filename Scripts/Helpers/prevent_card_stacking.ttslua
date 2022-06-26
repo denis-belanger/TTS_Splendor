@@ -26,7 +26,7 @@ function preventCardStacking(container)
     Wait.time(
         function()
             for _, zone in ipairs(container.getZones()) do
-                if string.match(zone.getName(), "Player Point Zone") then
+                if string.match(zone.getName(), "Player Point Zone") ~= nil then
                     container.takeObject({
                         position = {container.getPosition().x, container.getPosition().y + 1, container.getPosition().z - 0.8},
                         smooth   = true,

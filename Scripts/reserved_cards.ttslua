@@ -4,6 +4,7 @@ hidden_colors = {}
 --// Triggers when the game (and all objects it contains) has finished loading //--
 function onLoad()
     setHiddenColors()
+    hideExistingCards()
 end
 
 --// Triggers when an object enters a zone //--
@@ -31,6 +32,15 @@ function setHiddenColors()
     for i, color in ipairs(hidden_colors) do
         if string.match(self.getName(), color) ~= nil then
             table.remove(hidden_colors, i)
+        end
+    end
+end
+
+--// Hide any cards that are already reside in this zone //--
+function hideExistingCards()
+    for _, object in ipairs(self.getObjects()) do
+        if object.type == "Card" then
+            object.setHiddenFrom(hidden_colors)
         end
     end
 end

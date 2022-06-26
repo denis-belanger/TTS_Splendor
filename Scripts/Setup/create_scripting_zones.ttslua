@@ -55,7 +55,7 @@ end
 function getScriptingZone(zone_name)
     for _, object in ipairs(getAllObjects()) do
         if object.type == "Scripting" and object.getName() ~= nil then
-            if string.match(object.getName(), zone_name) then
+            if string.match(object.getName(), zone_name) ~= nil then
                 return object
             end
         end

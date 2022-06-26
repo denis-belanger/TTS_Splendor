@@ -54,7 +54,7 @@ function startGame()
         if orient_expansion_enabled then
             trading_posts_mat_parameters.position = {0, 1, 14.5}
         end
-        -- Plcae the 'Trading Posts' mat
+        -- Place the 'Trading Posts' mat
         trading_posts_mat = bags.mats.takeObject(trading_posts_mat_parameters)
         -- Lock the 'Trading Posts' mat
         trading_posts_mat.setLock(true)
@@ -152,10 +152,12 @@ function startGame()
     if music_enabled then
         Wait.condition(
             function()
+                -- Start the music player
                 MusicPlayer.play()
             end,
             function() -- Condition function
-                return MusicPlayer.loaded -- Wait for everyone to finish loading the audioclip
+                -- Wait for everyone to finish loading the audioclip
+                return MusicPlayer.loaded
             end
         )
     end

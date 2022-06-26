@@ -9,7 +9,7 @@ function onLoad()
             -- Get the table defined in the global script
             gem_container_placement = Global.getTable("gem_container_placement")
         end,
-        function()
+        function() -- Condition function
             -- Wait for the table to be populated
             return Global.getTable("gem_container_placement") ~= nil
         end

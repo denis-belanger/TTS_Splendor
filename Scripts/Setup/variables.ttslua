@@ -179,6 +179,7 @@ player_point_zone_guids = {
     ["Yellow"] = "5361d0"
 }
 
+--// Initialize scritpting zones //--
 function initializeZones()
     -- Get the zones over each player mat
     player_point_zones = {}
@@ -261,6 +262,7 @@ function initializeBag(guid)
     local bag = getObjectFromGUID(guid)
     local color = bag.getColorTint()
     local position = bag.getPosition()
+
     bag.interactable = interactable
     if interactable then
         color.a = 1
@@ -269,14 +271,83 @@ function initializeBag(guid)
         color.a = 0
         position.y = -10.00
     end
+
     bag.setColorTint(color)
     bag.setPosition(position)
+
     return bag
 end
 
 --// Helper function that gets an object and locks it (returns object)
 function initializeObject(guid)
     object = getObjectFromGUID(guid)
-    object.interactable = interactable
+
+    if object ~= nil then
+        object.interactable = interactable
+    end
+
     return object
+end
+
+--// Helper function that saves the necessary variables needed to restore a game in progress //--
+function saveGameInProgress()
+    -- Exit the function if the game setup mat exists
+    if game_setup_mat ~= nil then return end
+
+    local save_data = {
+        player_points = player_points,
+        established_trading_posts = established_trading_posts,
+        deck_zone_parameters = deck_zone_parameters,
+        card_zone_parameters = card_zone_parameters,
+        trading_posts_zone_parameters = trading_posts_zone_parameters,
+        strongholds_expansion_enabled = strongholds_expansion_enabled
+    }
+    -- Encode the table of saved data as a string
+    return JSON.encode(save_data)
+end
+
+-- // Helper function that loads the necessary variables to restore a game in progress //--
+function loadGameInProgress(script_state)
+    -- Exit the function if the game setup mat exists
+    if game_setup_mat ~= nil then return end
+
+    -- Exit the function if there is no save data
+    if script_state == "" then return end
+
+    -- Decode the string of saved data as a table
+    save_data = JSON.decode(script_state)
+
+    player_points = save_data.player_points
+    established_trading_posts = save_data.established_trading_posts
+
+    deck_zone_parameters = save_data.deck_zone_parameters
+    card_zone_parameters = save_data.card_zone_parameters
+    trading_posts_zone_parameters = save_data.trading_posts_zone_parameters
+    strongholds_expansion_enabled = save_data.strongholds_expansion_enabled
+
+    createDeckScriptingZones()
+    createCardScriptingZones()
+
+    if trading_posts_zone_parameters ~= nil then
+        createTradingPostScriptingZones()
+    end
+
+    for deck_color, guid in pairs(deck_guids) do
+        deck = getObjectFromGUID(guid)
+        if deck ~= nil then
+            decks[deck_color] = deck
+        end
+    end
+
+    for player_color, zone in pairs(player_point_zones) do
+        Wait.frames(
+        function()
+            trackTotalGemTokens(zone)
+            if strongholds_expansion_enabled then
+                player_mats[player_color].editButton({index = 3, label = "●  ●  ●"})
+            end
+        end,
+        2
+        )
+    end
 end
