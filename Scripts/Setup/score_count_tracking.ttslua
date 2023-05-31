@@ -37,7 +37,9 @@ function countGem(zone, object)
                 if string.match(object_in_zone.getName(), "Double") ~= nil then
                     cards = cards + 2
                 else
-                    cards = cards + 1
+                    if string.match(object_in_zone.getName(), "Unpairing...") == nil then
+                        cards = cards + 1
+                    end
                 end
             else
                 -- Increment the coin count by 2 if the coin is a double coin card, otherwise incement by 1
@@ -93,8 +95,8 @@ function trackTotalGemTokens(zone)
     player_mats[player_color].editButton({index = 2, color = button_color})
 end
 
---// Helper funtion to trigger the tracking of points from object owned scripts //--
-function triggerTrackPoints(object)
+--// Helper funtion to trigger the counting of a gem type from object owned scripts //--
+function triggerCountGem(object)
     -- Exit the function if the object is nil
     if object == nil then return end
     -- Exit the function if the object isn't in a zone
@@ -102,7 +104,7 @@ function triggerTrackPoints(object)
 
     for _, zone in ipairs(object.getZones()) do
         if string.match(zone.getName(), "Player Point Zone") ~= nil then
-            trackPoints(zone, object)
+            countGem(zone, object)
             break
         end
     end

@@ -1,3 +1,6 @@
+-- Include Files
+#include !\TTS_Splendor\Scripts\Helpers\split_string
+
 -- Set the paired state of the card
 paired = false
 
@@ -20,15 +23,15 @@ function pair(object)
     if string.match(object.getName(), "Pairing") ~= nil then return end
     -- Exit the function if the colliding card name doesn't contain 'card' or 'Cards'
     if string.match(object.getName(), "card") == nil and string.match(object.getName(), "Card") == nil then return end
-    -- Exit the function if the colliding card's description isn't a number
-    if tonumber(object.getDescription()) == nil then return end
 
     -- Set the paired state of this card
     paired = true
-    -- Set the description of this card to that of the colliding card
-    self.setDescription(object.getDescription())
-    -- Update the total points for the zone containing this card if applicable
-    Global.call("triggerTrackPoints", self)
+    -- Get the gem type from the name of the colliding card
+    gem_type = split(object.getName(), " ")[1]
+    -- Set the name of this card to include the gem type of the colliding card
+    self.setName(gem_type .. " (" .. self.getName() .. ")")
+    -- Update the total count for the gem type for the zone containing this card if applicable
+    Global.call("triggerCountGem", self)
 
     -- Create the 'Unpair' button so that this card can be unpaired
     self.createButton({
@@ -42,43 +45,45 @@ function pair(object)
     })
 
     -- Set the parameters for placing the points decal
-    local decal_position   = {0.8115717, 0.3631513, -1.197116}
+    local decal_position   = {-0.499194, 0.363151, -0.979614}
     local decal_rotation   = {90, 180, 0}
-    local decal_scale      = {0.3546518, 0.498055, 9.23077}
+    local decal_scale      = {0.3626, 0.333333, 6.153847}
     local decal_parameters = {name = "", url = "", position = decal_position, rotation = decal_rotation, scale = decal_scale}
 
     -- Apply the decal to this card according to the points of the colliding cards
-    if object.getDescription() == "1" then
-        decal_parameters.name = "Pairing Card Decal - 1"
-        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882891249/5F4C18FCC7D09F3A476A6CD626294C0DB2139B78/"
-    elseif object.getDescription() == "2" then
-        decal_parameters.name = "Pairing Card Decal - 2"
-        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882891835/2E934E951F6261645B3195A25591C1EC3EEE5813/"
-    elseif object.getDescription() == "3" then
-        decal_parameters.name = "Pairing Card Decal - 3"
-        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882892571/B9131C4CFAC5758B98C1AE48560683912157C4B4/"
-    elseif object.getDescription() == "4" then
-        decal_parameters.name = "Pairing Card Decal - 4"
-        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882893318/8FB42EBD7CC7D6CE7D915ACAAA695CE3460A5FE7/"
+    if string.match(object.getName(), "Diamond") ~= nil then
+        decal_parameters.name = "Pairing Card Decal - Diamond"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/2018221770485259212/AD1C9EF5B3CC6A025EE72EC102A11C372E786DDA/"
+    elseif string.match(object.getName(), "Sapphire") ~= nil then
+        decal_parameters.name = "Pairing Card Decal - Sapphire"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/2018221770485263826/A57ACDB69E64115549A4501E128D986BCB8A04D7/"
+    elseif string.match(object.getName(), "Emerald") ~= nil then
+        decal_parameters.name = "Pairing Card Decal - Emerald"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/2018221770485262139/29C86F9DADDD5E2B41D8AD0235D246BEE13D047A/"
+    elseif string.match(object.getName(), "Ruby") ~= nil then
+        decal_parameters.name = "Pairing Card Decal - Ruby"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/2018221770485260894/CBEC84FAE34D12968B512BE2053FB19AF9F44837/"
     else
-        decal_parameters.name = "Pairing Card Decal - 5"
-        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/1854929752882893926/E1CF00EEF847709E3F1EC1B0BDA9F10E9FDB54C6/"
+        decal_parameters.name = "Pairing Card Decal - Onyx"
+        decal_parameters.url  = "http://cloud-3.steamusercontent.com/ugc/2018221770485152463/0C43816527DBF586687A6A434F148027F639FDDE/"
     end
     self.setDecals({decal_parameters})
 end
 
---// Remove the duplicated points, buttons, and decal from this card //--
+--// Reset the name of this card and remove the button from it //--
 function unpair()
     -- Set the paired state of this card
     paired = false
-    -- Rest the description of this card
-    self.setDescription("*")
+    -- Mark this card for unpairing
+    self.setName(self.getName() .. " (Unpairing...)")
     -- Remove all buttons from this card
     for i = 0, #self.getButtons() - 1 do
         self.removeButton(i)
     end
     -- Remove all decals from this card
     self.setDecals({})
-    -- Update the total points for the zone containing this card if applicable
-    Global.call("triggerTrackPoints", self)
+    -- Update the total count for the gem type for the zone containing this card if applicable
+    Global.call("triggerCountGem", self)
+    -- Reset the name of this card
+    self.setName("Pairing Card")
 end
